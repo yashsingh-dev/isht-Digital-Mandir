@@ -12,6 +12,24 @@
         "music": "Music Screen",
         "mandir": "Mandir Screen",
         "status": "Status Screen",
-        "panditJi": "Pandit Ji Screen"
+        "panditJi": "Pandit Ji Screen",
+        "profile": "Profile",
+        "myProfile": "My Profile",
+        "language": "Language",
+        "rateUs": "Rate on Play Store",
+        "share": "Share with Friends",
+        "about": "About",
+        "privacyPolicy": "Privacy Policy",
+        "disclaimer": "Disclaimer",
+        "uploadPhoto": "Upload your photo"
+    },
+    "profileForm": {
+        "name": "Name",
+        "dob": "Date of Birth",
+        "birthPlace": "Birth Place",
+        "birthTime": "Birth Time",
+        "phoneNumber": "Phone Number",
+        "location": "Location",
+        "save": "Save Details"
     }
 }

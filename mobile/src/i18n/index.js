@@ -18,7 +18,7 @@ const resources = {
 // Detect the user's preferred language
 const getLanguage = () => {
     const locales = Localization.getLocales();
-    return locales[0]?.languageCode ?? 'hi';
+    return locales[0]?.languageCode ?? 'en';
 }
 
 
@@ -26,12 +26,12 @@ i18n
     .use(initReactI18next)
     .init({
         resources,
-        lng: 'hi', // Force default to Hindi as requested "Primary language will be Hindi"
-        fallbackLng: 'hi', // Fallback to Hindi
+        lng: 'en',
+        fallbackLng: 'en',
         interpolation: {
             escapeValue: false,
         },
-        compatibilityJSON: 'v3', // Required for Android
+        compatibilityJSON: 'v3',
     });
 
 export default i18n;

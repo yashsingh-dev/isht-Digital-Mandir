@@ -1,25 +1,49 @@
-import { useTranslation } from 'react-i18next';
-import { StyleSheet, View, Text} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { useLayoutEffect } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Mandir() {
-    const { t } = useTranslation();
+    const navigation = useNavigation();
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: false,
+        });
+    }, [navigation]);
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}>{t('screens.mandir')}</Text>
-        </View>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('Profile')}
+                    style={styles.profileButton}
+                >
+                    <Ionicons name="person-circle-outline" size={40} color="#fff" />
+                </TouchableOpacity>
+            </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#fff',
+    },
+    header: {
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+    },
+    profileButton: {
+        backgroundColor: '#ff9933',
+        borderRadius: 20,
+        width: 40,
+        height: 40,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#ff9933', // Saffron color for Mandir
-    },
-    text: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#fff',
     },
 });
