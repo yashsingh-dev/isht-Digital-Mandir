@@ -1,0 +1,17 @@
+{
+    "welcome": "Welcome",
+    "tabs": {
+        "myDevotee": "My Devotee",
+        "music": "Music",
+        "mandir": "Mandir",
+        "status": "Status",
+        "panditJi": "Pandit Ji"
+    },
+    "screens": {
+        "myDevotee": "My Devotee Screen",
+        "music": "Music Screen",
+        "mandir": "Mandir Screen",
+        "status": "Status Screen",
+        "panditJi": "Pandit Ji Screen"
+    }
+}
