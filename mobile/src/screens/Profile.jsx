@@ -17,7 +17,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Profile() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const navigation = useNavigation();
     const [image, setImage] = useState(null);
     const [expandedIndex, setExpandedIndex] = useState(null);
@@ -159,11 +159,13 @@ export default function Profile() {
                         </View>
                         <Text style={styles.menuItemText}>{t(item.label)}</Text>
                     </View>
-                    {(item.route !== 'RateUs' && item.route !== 'Share') && (
-                        <Ionicons name={isExpanded ? "chevron-down" : "chevron-forward"} size={20} color="#ccc" />
-                    )}
+                    <Ionicons
+                        name={(isExpanded && item.route !== 'RateUs' && item.route !== 'Share') ? "chevron-down" : "chevron-forward"}
+                        size={20}
+                        color="#ccc"
+                    />
                 </TouchableOpacity>
-                {isExpanded && (
+                {(isExpanded || item.route === 'Language') && expandedIndex === index && (
                     <View style={styles.menuItemContent}>
                         {item.route === 'MyProfile' && (
                             <View style={styles.formContainer}>
@@ -236,6 +238,34 @@ export default function Profile() {
                                 </TouchableOpacity>
                             </View>
                         )}
+                        {item.route === 'Language' && (
+                            <View style={styles.languageContainer}>
+                                {['en', 'hi'].map((lang) => (
+                                    <TouchableOpacity
+                                        key={lang}
+                                        style={[
+                                            styles.languageOption,
+                                            i18n.language === lang && styles.languageOptionSelected
+                                        ]}
+                                        onPress={() => i18n.changeLanguage(lang)}
+                                        activeOpacity={0.7}
+                                    >
+                                        <Text style={[
+                                            styles.languageText,
+                                            i18n.language === lang && styles.languageTextSelected
+                                        ]}>
+                                            {lang === 'en' ? 'English' : 'हिंदी'}
+                                        </Text>
+                                        {i18n.language === lang && (
+                                            <Ionicons name="checkmark-circle" size={24} color="#ff9933" />
+                                        )}
+                                        {i18n.language !== lang && (
+                                            <View style={styles.radioUnselected} />
+                                        )}
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        )}
                     </View>
                 )}
             </View>
@@ -261,7 +291,11 @@ export default function Profile() {
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton} activeOpacity={0.7}>
+                        <Ionicons name="arrow-back" size={24} color="#333" />
+                    </TouchableOpacity>
                     <Text style={styles.headerTitle}>{t('screens.profile')}</Text>
+                    <View style={styles.headerRight} />
                 </View>
 
                 <View style={styles.profileSection}>
@@ -354,9 +388,17 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     header: {
+        flexDirection: 'row',
         paddingHorizontal: 20,
         paddingVertical: 15,
         alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    backButton: {
+        padding: 4,
+    },
+    headerRight: {
+        width: 32,
     },
     headerTitle: {
         fontSize: 24,
@@ -407,9 +449,9 @@ const styles = StyleSheet.create({
     },
     uploadText: {
         marginTop: 10,
-        fontSize: 14,
+        fontSize: 16,
         color: '#666',
-        fontWeight: '500',
+        fontWeight: '600',
     },
     menuContainer: {
         marginTop: 10,
@@ -493,5 +535,40 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         color: '#333',
+    },
+    languageContainer: {
+        marginTop: 5,
+    },
+    languageOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 12,
+        paddingHorizontal: 15,
+        borderRadius: 12,
+        marginBottom: 8,
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderColor: '#e1e1e1',
+    },
+    languageOptionSelected: {
+        borderColor: '#ff9933',
+        backgroundColor: '#fff5e6',
+    },
+    languageText: {
+        fontSize: 16,
+        color: '#333',
+        fontWeight: '500',
+    },
+    languageTextSelected: {
+        color: '#ff9933',
+        fontWeight: '600',
+    },
+    radioUnselected: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: '#ddd',
     },
 });

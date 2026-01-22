@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const userModel = require("../models/user.model");
+const adminModel = require("../models/admin.model");
 const { MESSAGES } = require("../config/constants");
 const blacklistTokenModel = require('../models/blacklistToken.model');
 const { secureHash } = require('../utils/crypto.utils');
@@ -25,15 +25,15 @@ module.exports.authenticate = async (req, res, next) => {
         const secret_key = process.env.JWT_ACCESS_KEY || 'default-key';
         let decoded = jwt.verify(accessToken, secret_key);
 
-        let user_data = await userModel.findById(decoded._id).select('+password');
-        if (!user_data) {
+        let admin_data = await adminModel.findById(decoded._id).select('+password');
+        if (!admin_data) {
             res.removeHeader('x-access-token');
             res.removeHeader('x-refresh-token');
-            throw new ApiError(409, MESSAGES.USER_NOT_FOUND);
+            throw new ApiError(409, MESSAGES.ADMIN_NOT_FOUND);
         }
 
-        req.user = {
-            ...user_data.toObject()
+        req.admin = {
+            ...admin_data.toObject()
         };
         next();
     }

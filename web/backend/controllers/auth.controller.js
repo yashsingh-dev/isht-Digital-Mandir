@@ -2,52 +2,47 @@ const { secureHash } = require('../utils/crypto.utils');
 const { generateAccessToken, generateRefreshToken } = require('../utils/setJwtToken.utils');
 const { MESSAGES } = require('../config/constants');
 const jwt = require('jsonwebtoken');
-const userModel = require('../models/user.model');
+const adminModel = require('../models/admin.model');
 const refreshTokenModel = require('../models/refreshToken.model');
 const blacklistTokenModel = require('../models/blacklistToken.model');
 const ApiError = require('../utils/ApiError');
 
-
 const login = async (req, res, next) => {
     try {
-        const { email, password, role } = req.body;
+        const { email, password } = req.body;
 
         if (!email || !password) {
             throw new ApiError(400, 'Email and password are required');
         }
 
-        // Find User
-        const user = await userModel.findOne({ email }).select('+password');
-        if (!user) {
+        // Find Admin
+        const admin = await adminModel.findOne({ email }).select('+password');
+        if (!admin) {
             throw new ApiError(401, MESSAGES.INVALID_EMAIL_PASSWORD);
         }
 
         // Check Password
-        const isMatch = (password === user.password);
+        const isMatch = (password === admin.password);
         if (!isMatch) {
             throw new ApiError(401, MESSAGES.INVALID_EMAIL_PASSWORD);
         }
 
-        if (role) {
-            if (user.role !== role) throw new ApiError(401, 'Invalid Role');
-        }
-
         // Generate JWT Tokens
-        const accessToken = await generateAccessToken(user._id);
-        const refreshToken = await generateRefreshToken(user._id);
+        const accessToken = await generateAccessToken(admin._id);
+        const refreshToken = await generateRefreshToken(admin._id);
 
         // Set tokens in response headers
         res.setHeader('x-access-token', 'Bearer ' + accessToken);
         res.setHeader('x-refresh-token', 'Bearer ' + refreshToken);
 
-        console.log(`User logged in: ${user.email}`);
+        console.log(`Admin logged in: ${admin.email}`);
 
         // Send Response
         return res.status(200).json({
             success: true,
             message: MESSAGES.LOGIN_SUCCESS,
             payload: {
-                ...user.toObject()
+                ...admin.toObject()
             }
         });
     }
@@ -58,52 +53,43 @@ const login = async (req, res, next) => {
 
 const register = async (req, res, next) => {
     try {
-        const {
-            name,
-            email,
-            whatsapp,
-            watermark,
-            password
-        } = req.body;
+        const { email, password } = req.body;
 
-        if (!email || !password || !name || !whatsapp || !watermark) {
+        if (!email || !password) {
             throw new ApiError(400, 'All fields are required');
         }
 
-        // Check User
-        const user = await userModel.findOne({ email }).select('+password');
-        if (user) {
-            throw new ApiError(409, MESSAGES.USER_EXISTS);
+        // Check Admin
+        const admin = await adminModel.findOne({ email }).select('+password');
+        if (admin) {
+            throw new ApiError(409, MESSAGES.ADMIN_EXISTS);
         }
 
-        // Prepare user data
-        const userData = {
-            name,
+        // Prepare Admin data
+        const adminData = {
             email,
-            whatsapp,
-            watermark,
             password
         };
 
-        // Add User
-        const new_user = await userModel.create(userData);
+        // Add Admin
+        const new_admin = await adminModel.create(adminData);
 
         // Generate JWT Token
-        const accessToken = await generateAccessToken(new_user._id);
-        const refreshToken = await generateRefreshToken(new_user._id);
+        const accessToken = await generateAccessToken(new_admin._id);
+        const refreshToken = await generateRefreshToken(new_admin._id);
 
         // Set tokens in response headers
         res.setHeader('x-access-token', 'Bearer ' + accessToken);
         res.setHeader('x-refresh-token', 'Bearer ' + refreshToken);
 
-        console.log(`User Created : ${new_user.email}`);
+        console.log(`Admin Created : ${new_admin.email}`);
 
         // Send Response
         return res.status(201).json({
             success: true,
             message: MESSAGES.REGISTER_SUCCESS,
             payload: {
-                ...new_user.toObject()
+                ...new_admin.toObject()
             }
         });
     }
@@ -129,10 +115,10 @@ const logout = async (req, res, next) => {
         const secret_key = process.env.JWT_REFRESH_KEY || 'default-key';
         const decoded = jwt.verify(refreshToken, secret_key);
 
-        // Check if the user from the token exists
-        const user = await userModel.findById(decoded._id);
-        if (!user) {
-            throw new ApiError(409, MESSAGES.USER_NOT_FOUND);
+        // Check if the admin from the token exists
+        const admin = await adminModel.findById(decoded._id);
+        if (!admin) {
+            throw new ApiError(409, MESSAGES.ADMIN_NOT_FOUND);
         }
 
         // Create accessToken hash and it in blacklist collection
@@ -164,7 +150,7 @@ const logout = async (req, res, next) => {
 
 const checkAuth = async (req, res, next) => {
     try {
-        if (!req.user) {
+        if (!req.admin) {
             throw new ApiError(401, MESSAGES.UNAUTH);
         }
 
@@ -173,7 +159,7 @@ const checkAuth = async (req, res, next) => {
             success: true,
             message: MESSAGES.AUTH,
             payload: {
-                ...req.user,
+                ...req.admin,
             }
         });
     }
@@ -206,11 +192,11 @@ const refreshAccessToken = async (req, res, next) => {
         // Delete old refresh token hash from DB
         await refreshTokenModel.findOneAndDelete({ token: hashRefreshToken });
 
-        // Get user from collection using decoded token id
-        const user = await userModel.findById(decoded._id);
+        // Get admin from collection using decoded token id
+        const admin = await adminModel.findById(decoded._id);
 
-        if (!user) {
-            throw new ApiError(409, MESSAGES.USER_NOT_FOUND);
+        if (!admin) {
+            throw new ApiError(409, MESSAGES.ADMIN_NOT_FOUND);
         }
 
         // Generate new access and refresh token

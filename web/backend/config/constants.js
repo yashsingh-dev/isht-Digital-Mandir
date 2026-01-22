@@ -7,11 +7,11 @@ module.exports = {
     },
     MESSAGES: {
         BAD_REQUEST: "Bad Request",
-        USER_NOT_FOUND: "User Not Found",
+        ADMIN_NOT_FOUND: "Admin Not Found",
         LOGIN_SUCCESS: "Login Success",
         REGISTER_SUCCESS: "Register Success",
         LOGOUT_SUCCESS: "Logout Success",
-        USER_EXISTS: "User Already Exists",
+        ADMIN_EXISTS: "Admin Already Exists",
         UNAUTH: "Unauthorized",
         AUTH: "Authorized",
         INVALID_EMAIL_PASSWORD: "Invalid Email or Password",
